@@ -15,5 +15,8 @@ router.delete('/deletePaymentHistory', basicAuthMiddleware, adminController.dele
 // Add a new employee
 router.post('/addEmployee', basicAuthMiddleware, adminController.addEmployee); // api/v1/admin/addEmployee
 
+// Get total amount collected for each year of payment
+router.get('/totalAmountByYear', basicAuthMiddleware, adminController.getTotalAmountByYear); // api/v1/admin/addEmployee
+
 
 module.exports = router;

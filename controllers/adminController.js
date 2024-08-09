@@ -168,3 +168,31 @@ exports.addEmployee = async (req, res) => {
 //     "department": "Engineering",
 //     "yearOfJoining": 2022
 // }
+
+// -----------------------X-X-X--------------------------------
+
+exports.getTotalAmountByYear = async (req, res) => {
+    try {
+
+        const employees = await Employee.find();
+
+        const totalAmounts = {};
+
+        employees.forEach(employee => {
+            employee.paymentHistory.forEach(payment => {
+                const year = payment.yearOfPayment;
+                const amount = payment.amount;
+
+                if (!totalAmounts[year]) {
+                    totalAmounts[year] = 0;
+                }
+
+                totalAmounts[year] += amount;
+            });
+        });
+
+        res.status(200).send(totalAmounts);
+    } catch (error) {
+        res.status(500).send({ status: 'fail', message: 'Error fetching total amounts', error });
+    }
+};
