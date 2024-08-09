@@ -196,3 +196,28 @@ exports.getTotalAmountByYear = async (req, res) => {
         res.status(500).send({ status: 'fail', message: 'Error fetching total amounts', error });
     }
 };
+
+// -----------------------X-X-X--------------------------------
+
+exports.getCountByDepartment = async (req, res) => {
+    try {
+
+        const employees = await Employee.find();
+
+        const departmentCounts = {};
+
+        employees.forEach(employee => {
+            const department = employee.department || "Unassigned";
+
+            if (!departmentCounts[department]) {
+                departmentCounts[department] = 0;
+            }
+
+            departmentCounts[department] += 1;
+        });
+
+        res.status(200).send(departmentCounts);
+    } catch (error) {
+        res.status(500).send({ status: 'fail', message: 'Error fetching employee counts by department', error });
+    }
+};

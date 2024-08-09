@@ -18,5 +18,8 @@ router.post('/addEmployee', basicAuthMiddleware, adminController.addEmployee); /
 // Get total amount collected for each year of payment
 router.get('/totalAmountByYear', basicAuthMiddleware, adminController.getTotalAmountByYear); // api/v1/admin/addEmployee
 
+// Get number of employees in each department
+router.get('/countByDepartment', basicAuthMiddleware, adminController.getCountByDepartment);
+
 
 module.exports = router;
