@@ -117,7 +117,7 @@ exports.deletePaymentHistory = async (req, res) => {
 
         const paymentIndex = employee.paymentHistory.findIndex(entry => entry.yearOfPayment === yearOfPayment);
         if (paymentIndex === -1) {
-            return res.status(404).send({status: 'fail', message: `Payment entry not found for this ${yearOfPayment} year of ${employeeName}`});
+            return res.status(404).send({ status: 'fail', message: `Payment entry not found for this ${yearOfPayment} year of ${employeeName}` });
         }
 
         employee.paymentHistory.splice(paymentIndex, 1);
@@ -135,4 +135,36 @@ exports.deletePaymentHistory = async (req, res) => {
 // {
 //     "employeeId": "66b4a67236ad3122c5b8e81e",
 //     "yearOfPayment": 2024
+// }
+
+// -----------------------X-X-X--------------------------------
+
+exports.addEmployee = async (req, res) => {
+    const { name, email, department, yearOfJoining } = req.body;
+
+    try {
+
+        const newEmployee = new Employee({
+            name,
+            email,
+            department,
+            yearOfJoining,
+            paymentHistory: []
+        });
+
+
+        await newEmployee.save();
+
+        res.status(201).send({ status: 'success', message: 'Employee added successfully !! Now you can add paymentHistory', employee: newEmployee });
+    } catch (error) {
+        res.status(500).send({ status: 'fail', message: 'Error adding employee', error });
+    }
+};
+
+// payload
+// {
+//     "name": "Yakkaladevara Sai Nagendra",
+//     "email": "sai.nagendra@example.com",
+//     "department": "Engineering",
+//     "yearOfJoining": 2022
 // }

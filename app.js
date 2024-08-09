@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 // Connect to the database
 connectDB();
 
-// middlewears
+// middleware
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 });
 
 app.use((req, res) => {
-    res.status(404).json({ msg: '404 Not Found' });
+    res.status(404).json({ message: '404 Not Found' });
 });
 
 console.log('PORT:', process.env.PORT);

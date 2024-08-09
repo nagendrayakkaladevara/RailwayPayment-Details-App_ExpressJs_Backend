@@ -12,5 +12,8 @@ router.post('/createPaymentHistory', basicAuthMiddleware, adminController.create
 // Delete payment history
 router.delete('/deletePaymentHistory', basicAuthMiddleware, adminController.deletePaymentHistory); // api/v1/admin/deletePaymentHistory
 
+// Add a new employee
+router.post('/addEmployee', basicAuthMiddleware, adminController.addEmployee); // api/v1/admin/addEmployee
+
 
 module.exports = router;
