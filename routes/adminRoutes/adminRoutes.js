@@ -21,5 +21,7 @@ router.get('/totalAmountByYear', basicAuthMiddleware, adminController.getTotalAm
 // Get number of employees in each department
 router.get('/countByDepartment', basicAuthMiddleware, adminController.getCountByDepartment);
 
+// Get department-wise total amount for a specific year
+router.get('/totalAmountByDepartment/:year', basicAuthMiddleware, adminController.getTotalAmountByDepartment);
 
 module.exports = router;

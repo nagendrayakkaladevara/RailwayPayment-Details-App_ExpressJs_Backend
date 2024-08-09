@@ -221,3 +221,35 @@ exports.getCountByDepartment = async (req, res) => {
         res.status(500).send({ status: 'fail', message: 'Error fetching employee counts by department', error });
     }
 };
+
+// -----------------------X-X-X--------------------------------
+
+exports.getTotalAmountByDepartment = async (req, res) => {
+    const { year } = req.params;
+
+    try {
+      
+        const employees = await Employee.find();
+
+        const departmentAmounts = {};
+
+        employees.forEach(employee => {
+            const department = employee.department || "Unassigned";
+
+            employee.paymentHistory.forEach(payment => {
+                if (payment.yearOfPayment === year) {
+                    
+                    if (!departmentAmounts[department]) {
+                        departmentAmounts[department] = 0;
+                    }
+
+                    departmentAmounts[department] += payment.amount;
+                }
+            });
+        });
+
+        res.status(200).send(departmentAmounts);
+    } catch (error) {
+        res.status(500).send({ msg: 'Error fetching total amounts by department', error });
+    }
+};
