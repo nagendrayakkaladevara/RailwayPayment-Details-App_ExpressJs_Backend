@@ -1,9 +1,15 @@
+const { z } = require('zod');
 const Employee = require('../models/employee');
+const addEmployeeSchema = require('../zod/addEmployeeSchema');
+const updatePaymentHistorySchema = require('../zod/updatePaymentHistorySchema');
 
 exports.updatePaymentHistory = async (req, res) => {
     const updates = req.body;
 
     try {
+
+        updatePaymentHistorySchema.parse(updates);
+
         const updatePromises = updates.map(async (update) => {
             const { employeeId, yearOfPayment, status, amount } = update;
 
@@ -21,7 +27,6 @@ exports.updatePaymentHistory = async (req, res) => {
                 return { status: 'failed', message: `Payment entry for year ${yearOfPayment} not found for employee ${employeeName} - ${employeeId}` };
             }
 
-            // Update the payment history entry
             paymentEntry.status = status;
             paymentEntry.amount = amount;
             paymentEntry.updatedAt = new Date();
@@ -30,11 +35,13 @@ exports.updatePaymentHistory = async (req, res) => {
             return { status: 'success', message: `Updated payment history for employee ${employeeName} - ${employeeId} for year ${yearOfPayment}` };
         });
 
-
         const results = await Promise.all(updatePromises);
 
         res.status(200).send(results);
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).send({ status: 'fail', message: 'Validation error', errors: error.errors });
+        }
         res.status(500).send({ status: 'error', message: 'Error updating payment history', error });
     }
 };
@@ -63,7 +70,9 @@ exports.createPaymentHistory = async (req, res) => {
     const { employeeId, yearOfPayment, status, amount } = req.body;
 
     try {
-        // Find the employee by ID
+
+        createPaymentHistorySchema.parse(req.body);
+
         const employee = await Employee.findById(employeeId);
         if (!employee) {
             return res.status(404).send({ status: 'fail', message: 'Employee not found' });
@@ -75,21 +84,22 @@ exports.createPaymentHistory = async (req, res) => {
             return res.status(400).send({ status: 'fail', message: 'This year already exists for this person' });
         }
 
-        // Create new payment history entry
         const newPayment = {
             yearOfPayment,
             status,
             amount,
-            updatedAt: new Date()
+            updatedAt: new Date(),
         };
 
-        // Push the new payment history entry to the employee's paymentHistory array
         employee.paymentHistory.push(newPayment);
 
         await employee.save();
 
         res.status(201).send({ status: 'success', message: 'Payment history created successfully', paymentHistory: newPayment });
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).send({ status: 'fail', message: 'Validation error', errors: error.errors });
+        }
         res.status(500).send({ status: 'fail', message: 'Error creating payment history', error });
     }
 };
@@ -109,27 +119,33 @@ exports.deletePaymentHistory = async (req, res) => {
 
     try {
 
+        deletePaymentHistorySchema.parse(req.body);
+
+        // Find the employee by ID
         const employee = await Employee.findById(employeeId);
-        const employeeName = employee.name
         if (!employee) {
-            return res.status(404).send({ status: 'fail', message: `Employee not found - ${employeeName}` });
+            return res.status(404).send({ status: 'fail', message: `Employee not found` });
         }
+
+        const employeeName = employee.name;
 
         const paymentIndex = employee.paymentHistory.findIndex(entry => entry.yearOfPayment === yearOfPayment);
         if (paymentIndex === -1) {
-            return res.status(404).send({ status: 'fail', message: `Payment entry not found for this ${yearOfPayment} year of ${employeeName}` });
+            return res.status(404).send({ status: 'fail', message: `Payment entry not found for year ${yearOfPayment} of ${employeeName}` });
         }
 
         employee.paymentHistory.splice(paymentIndex, 1);
 
         await employee.save();
 
-        res.status(200).send({ status: 'success', message: `Payment history deleted successfully - ${yearOfPayment} of ${employeeName}` });
+        res.status(200).send({ status: 'success', message: `Payment history deleted successfully for year ${yearOfPayment} of ${employeeName}` });
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).send({ status: 'fail', message: 'Validation error', errors: error.errors });
+        }
         res.status(500).send({ status: 'fail', message: 'Error deleting payment history', error });
     }
 };
-
 
 // payload
 // {
@@ -144,19 +160,23 @@ exports.addEmployee = async (req, res) => {
 
     try {
 
+        addEmployeeSchema.parse(req.body);
+
         const newEmployee = new Employee({
             name,
             email,
             department,
             yearOfJoining,
-            paymentHistory: []
+            paymentHistory: [],
         });
-
 
         await newEmployee.save();
 
-        res.status(201).send({ status: 'success', message: 'Employee added successfully !! Now you can add paymentHistory', employee: newEmployee });
+        res.status(201).send({ status: 'success', message: 'Employee added successfully! Now you can add paymentHistory.', employee: newEmployee });
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).send({ status: 'fail', message: 'Validation error', errors: error.errors });
+        }
         res.status(500).send({ status: 'fail', message: 'Error adding employee', error });
     }
 };
@@ -224,11 +244,38 @@ exports.getCountByDepartment = async (req, res) => {
 
 // -----------------------X-X-X--------------------------------
 
-exports.getTotalAmountByDepartment = async (req, res) => {
-    const { year } = req.params;
+// exports.getTotalAmountByDepartment = async (req, res) => {
+//     const { year } = req.params;
 
+//     try {
+
+//         const employees = await Employee.find();
+
+//         const departmentAmounts = {};
+
+//         employees.forEach(employee => {
+//             const department = employee.department || "Unassigned";
+
+//             employee.paymentHistory.forEach(payment => {
+//                 if (payment.yearOfPayment === year) {
+
+//                     if (!departmentAmounts[department]) {
+//                         departmentAmounts[department] = 0;
+//                     }
+
+//                     departmentAmounts[department] += payment.amount;
+//                 }
+//             });
+//         });
+
+//         res.status(200).send(departmentAmounts);
+//     } catch (error) {
+//         res.status(500).send({ msg: 'Error fetching total amounts by department', error });
+//     }
+// };
+
+exports.getTotalPaidAmountByDepartment = async (req, res) => {
     try {
-      
         const employees = await Employee.find();
 
         const departmentAmounts = {};
@@ -237,8 +284,8 @@ exports.getTotalAmountByDepartment = async (req, res) => {
             const department = employee.department || "Unassigned";
 
             employee.paymentHistory.forEach(payment => {
-                if (payment.yearOfPayment === year) {
-                    
+                if (payment.status === 'paid') {
+
                     if (!departmentAmounts[department]) {
                         departmentAmounts[department] = 0;
                     }
@@ -250,6 +297,6 @@ exports.getTotalAmountByDepartment = async (req, res) => {
 
         res.status(200).send(departmentAmounts);
     } catch (error) {
-        res.status(500).send({ msg: 'Error fetching total amounts by department', error });
+        res.status(500).send({ status: 'fail', message: 'Error fetching total paid amounts by department', error });
     }
 };

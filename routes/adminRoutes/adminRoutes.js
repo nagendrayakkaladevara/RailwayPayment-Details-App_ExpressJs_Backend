@@ -19,9 +19,12 @@ router.post('/addEmployee', basicAuthMiddleware, adminController.addEmployee); /
 router.get('/totalAmountByYear', basicAuthMiddleware, adminController.getTotalAmountByYear); // api/v1/admin/addEmployee
 
 // Get number of employees in each department
-router.get('/countByDepartment', basicAuthMiddleware, adminController.getCountByDepartment);
+router.get('/countByDepartment', basicAuthMiddleware, adminController.getCountByDepartment); // api/v1/admin/countByDepartment
 
-// Get department-wise total amount for a specific year
-router.get('/totalAmountByDepartment/:year', basicAuthMiddleware, adminController.getTotalAmountByDepartment);
+// // Get department-wise total amount for a specific year
+// router.get('/totalAmountByDepartment/:year', basicAuthMiddleware, adminController.getTotalAmountByDepartment); // api/v1/admin/totalAmountByDepartment/:year
+
+// Get department-wise total amount for paid statuses
+router.get('/totalPaidAmountByDepartment', basicAuthMiddleware, adminController.getTotalPaidAmountByDepartment);
 
 module.exports = router;
