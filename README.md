@@ -1,4 +1,4 @@
-# Employee Payment Data Uploader
+# Railway Welfare Fund Tracker Application
 
 This application reads employee payment data from an Excel file and stores it in a MongoDB database. The data includes employee details such as name, email, department, year of joining, and their payment history from 2020 onwards.
 
