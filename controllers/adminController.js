@@ -172,7 +172,7 @@ exports.addEmployee = async (req, res) => {
 
         await newEmployee.save();
 
-        res.status(201).send({ status: 'success', message: 'Employee added successfully! Now you can add paymentHistory.', employee: newEmployee });
+        res.status(201).send({ status: 'success', message: 'Employee added successfully! Now you can add paymentHistory for this employee.', employee: newEmployee });
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).send({ status: 'fail', message: 'Validation error', errors: error.errors });
