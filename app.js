@@ -44,7 +44,7 @@ app.get('/track-visitor', async (req, res) => {
     }
 });
 
-app.get('/track-visitor/railwayUnionPollingApplication2024', async (req, res) => {
+app.get('/track-polling-visitor', async (req, res) => {
     try {
         let visitor = await VisitorPolling.findOne();
 
