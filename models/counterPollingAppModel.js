@@ -7,6 +7,6 @@ const visitorPollingSchema = new mongoose.Schema({
   },
 });
 
-const Visitor = mongoose.model('VisitorPolling', visitorPollingSchema);
+const VisitorPolling = mongoose.model('VisitorPolling', visitorPollingSchema);
 
-module.exports = Visitor;
+module.exports = VisitorPolling;
