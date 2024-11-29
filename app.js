@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const connectDB = require('./config/db');
 const routes = require('./routes/');
 const Visitor = require('./models/counterAppModel');
+const VisitorPolling = require('./models/counterAppModel');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -30,6 +31,25 @@ app.get('/track-visitor', async (req, res) => {
 
         if (!visitor) {
             visitor = new Visitor({ count: 1 });
+        } else {
+            visitor.count += 1;
+        }
+        
+        await visitor.save();
+
+        res.json({ message: 'Visitor count updated', count: visitor.count });
+    } catch (error) {
+        console.error('Error tracking visitor:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+app.get('/track-visitor/railwayUnionPollingApplication2024', async (req, res) => {
+    try {
+        let visitor = await VisitorPolling.findOne();
+
+        if (!visitor) {
+            visitor = new VisitorPolling({ count: 1 });
         } else {
             visitor.count += 1;
         }
