@@ -5,7 +5,8 @@ const bodyParser = require('body-parser');
 const connectDB = require('./config/db');
 const routes = require('./routes/');
 const Visitor = require('./models/counterAppModel');
-const VisitorPolling = require('./models/counterAppModel');
+const VisitorPolling = require('./models/counterPollingAppModel');
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
